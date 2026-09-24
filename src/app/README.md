@@ -1,0 +1,1 @@
+funcionalidad desarrollada por el equipo de backend.
