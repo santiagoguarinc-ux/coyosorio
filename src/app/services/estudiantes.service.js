@@ -15,8 +15,19 @@ const obtenerTodos = async()   => {
 };
 
 //buscar un estudiante por id. si no lo encuentra devuelve undefined.
-const obtenerPorId = (id) => {
-    return estudiantes.find ((estudiante) => estudiante.id === id);
+const obtenerPorId = async (id) => {
+    
+    const { data, error } = await supabase
+        .from('estudintes')
+        .select("*")
+        .eq('id', id)   
+        .single();
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
 };
 
 /* Nota: 
@@ -26,52 +37,51 @@ const obtenerPorId = (id) => {
 */
 
 // crea un estudiante copiando los datos recibido
-const crear = (datos) => {
-    const nuevoEstudiante = {
-        id: estudiantes.length + 1,
-        ...datos
+const crear = async (estudiante) => {
+    
+    const { data, error } = await supabase
+        .from('estudiantes')
+        .insert(estudiante)
+        .select()
+        .single();
 
-    };
-
-    estudiantes.push (nuevoEstudiante);
-
-    return nuevoEstudiante;
-};
-
-const actualizar = (id, datos) => {
-    const indice = estudiantes.findIndex (
-        (estudiante) => estudiante.id === id
-    );
-
-    if (indice === -1) {
-        return null;
+    if (error) {
+        throw error;
     }
 
-    estudiantes[indice] = {
-        ...estudiantes[indice],
-        ...datos,
-        id
-    };
-
-    return estudiantes[indice];
+    return data;
 };
 
-const eliminar = (id) => {
-    const indice = estudiantes.findIndex(
-        (estudiante) => estudiante.id === id
-    );
+const actualizar = async (id, estudiantes) => {
+    
+    const { data, error } = await supabase
+        .from('estudiantes')
+        .update(estudiantes)
+        .eq('id', id)
+        .select()
+        .single();
 
-    if (indice === -1) {
-        return null;
+    if (error) {
+        throw error;
     }
 
-    const estudianteEliminado = estudiantes[indice];
+    return data;
+};
 
-    //Eliminar un elemento del arreglo comenzando 
-    //Desde determinada posicion.
-    estudiantes.splice(indice, 1);
+const eliminar = async (id) => {
+    
+    const { data, error } = await supabase
+        .from('estudiantes')
+        .delete()
+        .eq('id', id)
+        .select()
+        .single();
 
-    return estudianteEliminado
+    if (error) {
+        throw error;
+    }
+    
+    return data;
 };
 
 //si crean una funcion pero se olvida exportarla,

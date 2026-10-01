@@ -15,72 +15,88 @@ const obtenerEstudiantes = async(req, res) => {
     }
 };
 
-const obtenerEstudiantesPorId = (req, res) => {
-    const id = Number (req.params.id);
+const obtenerEstudiantesPorId = async (req, res) => {
+    try {
 
-    const estudiante = estudiantesService.obtenerPorId(id);
+        const {id} =req.params;
+       
+        const estudiante =
+            await estudiantesService.obtenerPorId(id);
+        
+        res.status(200).json(estudiante);
+    } catch (error) {
 
-    if(!estudiante) {
-        return res.status (404).json({
+        console.error(error);
+
+        res.status(404).json({
             error: "Estudiante no encontrado"
         });
     }
-
-    res.json(estudiante);
 };
 
-const crearEstudiante = (req, res) => {
-    const {nombre, correo, edad} = req.body;
+const crearEstudiante = async (req, res) => {
+    
+    try {
 
-    if (!nombre || !correo || !edad) {
-        return res.status(400).json({
-            error: "Todos los campos son obligatorios"
+        const estudiantes = 
+        await estudiantesService.crear(req.body);
+
+        res.status(201).json(estudiantes);
+        } catch (error) {
+
+            console.error(error);
+
+            res.status(500).json({
+                error: "Error al crear el estudiante"
+            });
+        }
+    };
+
+const actualizarEstudiante = async (req, res) => {
+   
+    try {
+        
+        const {id} = req.params;
+
+        const estudiante =
+            await estudiantesService.actualizar(
+                id,
+                req.body
+            );
+
+            res.status(200).json(estudiante);
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Error al actualizar el estudiante"
         });
     }
-
-    const nuevoEstudiante = estudiantesService.crear({
-        nombre,
-        correo,
-        edad
-    });
-
-    res.status(201).json(nuevoEstudiante);
 };
 
-const actualizarEstudiante = (req, res) => {
-    const id = Number (req.params.id);
+const eliminarEstudiante = async(req, res) => {
+    try {
 
-    const datos = req.body;
+        const {id} = req.params;
 
-    const estudianteActualizado = estudiantesService.actualizar(id, datos);
+        const estudiante =
+            await estudiantesService.eliminar(id);
 
-    if (!estudianteActualizado) {
-        return res.status(404).json({
-            error: "Estudiante no encontrado"
+            res.status(200).json({
+                mensaje: "Estudiante eliminado",
+                estudiante
+            });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Error al eliminar el estudiante"
         });
     }
-
-    res.status (200).json({
-        mensaje: "Estudiante actualizado correctamente",
-        estudiante: estudianteActualizado
-    });
-};
-
-const eliminarEstudiante = (req, res) => {
-    const id = Number(req.params.id);
-
-    const estudianteEliminado = estudiantesService.eliminar(id);
-
-    if (!estudianteEliminado) {
-        return res.status(404).json({
-            error: "Estudiante no encontrado"
-        });
-    }
-
-    res.status(200).json({
-        mensaje: "Estudiante eliminado correctamente",
-        estudiante: estudianteEliminado
-    });
 };
 
 module.exports = {
