@@ -1,16 +1,17 @@
-//arreglo en memoria. esto significa que todavia no estamos usando base de datos.
-let estudiantes = [
-    {
-     id: 1,
-     nombre: "federico",
-     correo: "federico676767@gmail.com",
-     edad: 18
-    }
-];
+
+const supabase = require("../config/supabaseAdmin");
 
 //esta funcion devuelve todos los estudiantes
-const obtenerTodos = ()  => {
-    return estudiantes;
+const obtenerTodos = async()   => {
+    const {data, error} = await supabase
+        .from('estudintes')
+        .select("*");
+    
+    if (error) {
+        throw error;
+    }
+     
+    return data;
 };
 
 //buscar un estudiante por id. si no lo encuentra devuelve undefined.
